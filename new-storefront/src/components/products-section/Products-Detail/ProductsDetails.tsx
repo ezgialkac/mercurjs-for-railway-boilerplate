@@ -2,23 +2,16 @@ import React, { useEffect, useState } from 'react'
 import SingleProductSlider from './single-product-slider/SingleProductSlider'
 import { Col, Row } from 'react-bootstrap'
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 
 const ProductsDetails = () => {
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const [quantity, setQuantity] = useState(1);
     const [product, setProduct] = useState<any | null>(null);
-    const searchParams = useSearchParams();
 
     useEffect(() => {
-        const controller = new AbortController();
-        const handle = searchParams.get("handle");
-
         const load = async () => {
             try {
-                const qs = handle ? `?handle=${encodeURIComponent(handle)}` : "";
-                const res = await fetch(`/api/medusa-product${qs}`, {
-                    signal: controller.signal,
+                const res = await fetch(`/api/medusa-product`, {
                     cache: "no-store",
                 });
                 if (!res.ok) return;
@@ -31,8 +24,8 @@ const ProductsDetails = () => {
 
         load();
 
-        return () => controller.abort();
-    }, [searchParams]);
+        return () => {};
+    }, []);
 
     const defaultOptions: { value: string }[] = [
         { value: "250g" }, { value: "500g" }, { value: "1kg" }, { value: "2kg" },
