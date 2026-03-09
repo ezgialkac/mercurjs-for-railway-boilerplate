@@ -1,15 +1,68 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SingleProductSlider from './single-product-slider/SingleProductSlider'
 import { Col, Row } from 'react-bootstrap'
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 const ProductsDetails = () => {
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const [quantity, setQuantity] = useState(1);
+    const [product, setProduct] = useState<any | null>(null);
+    const searchParams = useSearchParams();
 
-    const options = [
+    useEffect(() => {
+        const controller = new AbortController();
+        const handle = searchParams.get("handle");
+
+        const load = async () => {
+            try {
+                const qs = handle ? `?handle=${encodeURIComponent(handle)}` : "";
+                const res = await fetch(`/api/medusa-product${qs}`, {
+                    signal: controller.signal,
+                    cache: "no-store",
+                });
+                if (!res.ok) return;
+                const json = await res.json();
+                setProduct(json.product || null);
+            } catch {
+                // ignore, fall back to template defaults
+            }
+        };
+
+        load();
+
+        return () => controller.abort();
+    }, [searchParams]);
+
+    const defaultOptions = [
         { value: "250g" }, { value: "500g" }, { value: "1kg" }, { value: "2kg" },
     ]
+
+    const dynamicWeights =
+        product?.variants
+            ?.map((v: any) => v?.title)
+            .filter((v: any) => !!v) || [];
+
+    const options =
+        dynamicWeights.length > 0
+            ? dynamicWeights.map((v: string) => ({ value: v }))
+            : defaultOptions;
+
+    const title = product?.title || "Ground Nuts Oil Pack 52g";
+    const description =
+        product?.description ||
+        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quas nihil laboriosam voluptatem ab consectetur dolorum id, soluta sunt at culpa commodi totam quod natus qui!";
+
+    const price = product?.priceFormatted || "$923.00";
+    const mrp = "$1,999.00";
+
+    const sku = product?.sku || "WH12";
+    const stock =
+        typeof product?.inventory_quantity === "number"
+            ? product.inventory_quantity > 0
+                ? "In stock"
+                : "Out of stock"
+            : "In stock";
 
     const handleActiveTab = (index: any) => {
         setActiveIndex(index)
@@ -32,7 +85,7 @@ const ProductsDetails = () => {
                     <Col lg={7} className="col-12 mb-24">
                         <div className="bb-single-pro-contact">
                             <div className="bb-sub-title">
-                                <h4>Ground Nuts Oil Pack 52g</h4>
+                                <h4>{title}</h4>
                             </div>
                             <div className="bb-single-rating">
                                 <span className="bb-pro-rating">
@@ -46,25 +99,22 @@ const ProductsDetails = () => {
                                     |&nbsp;&nbsp;<Link href="#bb-spt-nav-review">992 Ratings</Link>
                                 </span>
                             </div>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quas nihil laboriosam
-                                voluptatem
-                                ab consectetur dolorum id, soluta sunt at culpa commodi totam quod natus qui!
-                            </p>
+                            <p>{description}</p>
                             <div className="bb-single-price-wrap">
                                 <div className="bb-single-price">
                                     <div className="price">
-                                        <h5>$923.00 <span>-78%</span></h5>
+                                        <h5>{price} <span>-78%</span></h5>
                                     </div>
                                     <div className="mrp">
-                                        <p>M.R.P. : <span>$1,999.00</span></p>
+                                        <p>M.R.P. : <span>{mrp}</span></p>
                                     </div>
                                 </div>
                                 <div className="bb-single-price">
                                     <div className="sku">
-                                        <h5>SKU#: WH12</h5>
+                                        <h5>SKU#: {sku}</h5>
                                     </div>
                                     <div className="stock">
-                                        <span>In stock</span>
+                                        <span>{stock}</span>
                                     </div>
                                 </div>
                             </div>
