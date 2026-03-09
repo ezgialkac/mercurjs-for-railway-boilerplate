@@ -20,7 +20,7 @@
     "formik": "^2.4.6",
     "framer-motion": "^12.5.0",
     "lodash": "^4.17.21",
-    "next": "^15.2.3",
+    "next": "^15.5.7",
     "nouislider-react": "^3.4.2",
     "rc-dropdown": "^4.2.0",
     "rc-menu": "^9.15.1",
