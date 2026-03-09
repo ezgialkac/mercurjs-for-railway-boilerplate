@@ -1,15 +1,17 @@
-"use client"
 import React from 'react'
 import Breadcrumb from '@/components/breadcrumb/Breadcrumb'
 import ShopCategorySlider from '@/components/category/ShopCategorySlider'
-import Shop from '@/components/shop/Shop'
+import MedusaProductListing from '@/components/medusa/MedusaProductListing'
 
-const page = () => {
+const page = async ({ searchParams }) => {
+  const q = searchParams?.q || ""
+  const pageNum = Number(searchParams?.page || 1)
+
   return (
     <>
       <Breadcrumb title={"Shop Page"} />
       <ShopCategorySlider />
-      <Shop col={4} />
+      <MedusaProductListing page={Number.isFinite(pageNum) ? pageNum : 1} q={q} />
     </>
   )
 }

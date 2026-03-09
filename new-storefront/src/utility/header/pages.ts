@@ -36,5 +36,9 @@ const pages: Page[] = [
     name: "Register",
     href: "/register",
   },
+  {
+    name: "Medusa Demo",
+    href: "/medusa-demo",
+  },
 ];
 export default pages;
