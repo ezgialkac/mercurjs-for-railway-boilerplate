@@ -34,16 +34,16 @@ const ProductsDetails = () => {
         return () => controller.abort();
     }, [searchParams]);
 
-    const defaultOptions = [
+    const defaultOptions: { value: string }[] = [
         { value: "250g" }, { value: "500g" }, { value: "1kg" }, { value: "2kg" },
     ]
 
-    const dynamicWeights =
+    const dynamicWeights: string[] =
         product?.variants
             ?.map((v: any) => v?.title)
             .filter((v: any) => !!v) || [];
 
-    const options =
+    const options: { value: string }[] =
         dynamicWeights.length > 0
             ? dynamicWeights.map((v: string) => ({ value: v }))
             : defaultOptions;
